@@ -1,10 +1,19 @@
-import express from 'express';
-import { HOST, PORT } from './configs/env.config';
+import express from "express";
+import morgan from "morgan";
+import compression from "compression";
+import helmet from "helmet";
+import rootRoute from "./routes";
 
 const app = express();
 
-app.get('/', (req, res) => {
-	res.send('Hello World');
-});
+// Setup middlewares
+app.use(morgan("dev"));
+app.use(compression());
+app.use(helmet());
+
+// Handle routers
+app.use("/", rootRoute);
+
+// Connect to database
 
 export default app;

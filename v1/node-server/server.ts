@@ -1,7 +1,7 @@
 import { HOST, PORT } from './src/configs/env.config';
 import app from './src';
 
-const server = app.listen(PORT, HOST, () => {
+const server = app.listen(PORT, HOST, async () => {
 	console.log(`Server is running on http://${HOST}:${PORT}`);
 });
 
@@ -16,5 +16,5 @@ process.on('SIGINT', async () => {
 		});
 	});
 
-	process.exit();
+	process.exit(0);
 });
