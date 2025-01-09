@@ -20,16 +20,19 @@ const config: webpack.Configuration = {
         // Add `.ts` and `.tsx` as a resolvable extension.
         extensions: [".ts", ".js"],
         // Add support for TypeScripts fully qualified ESM imports.
-        //    extensionAlias: {
-        //        ".js": [".js", ".ts"],
-        //        ".cjs": [".cjs", ".cts"],
-        //        ".mjs": [".mjs", ".mts"],
-        //    },
+        extensionAlias: {
+            ".js": [".js", ".ts"],
+            ".cjs": [".cjs", ".cts"],
+            ".mjs": [".mjs", ".mts"],
+        },
+        // Fix not found packages on typescript
         alias: {
-            snappy: "/node_modules//node_modules/mongodb/lib/deps.js",
-            "mongodb-client-encryption": "/node_modules/mongoose/node_modules/mongodb/lib/deps.js",
-            "@aws-sdk/credential-providers": "/node_modules/mongoose/node_modules/mongodb/lib/deps.js",
-            "@mongodb-js/zstd": "/node_modules/mongoose/node_modules/mongodb/lib/deps.js",
+            snappy: "/node_modules/mongodb/lib/deps.js",
+            kerberos: "/node_modules/mongodb/lib/deps.js",
+            "gcp-metadata": "/node_modules/mongodb/lib/deps.js",
+            "mongodb-client-encryption": "/node_modules/mongodb/lib/deps.js",
+            "@aws-sdk/credential-providers": "/node_modules/mongodb/lib/deps.js",
+            "@mongodb-js/zstd": "/node_modules/mongodb/lib/deps.js",
         },
     },
     module: {
