@@ -10,3 +10,6 @@ dotenv.config({
 // Server configuration
 export const HOST = process.env.HOST || "0.0.0.0";
 export const PORT = Number(process.env.PORT) || 3000;
+
+// MongoDB configuration
+export const MONGODB_URI = process.env.MONGODB_URI || "";
