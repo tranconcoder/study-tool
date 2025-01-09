@@ -1,20 +1,27 @@
-import { HOST, PORT } from './src/configs/env.config';
-import app from './src';
+import { HOST, PORT } from "./src/configs/env.config";
+import app from "./src";
+import connectMongoDB from "./dist/configs/db";
 
-const server = app.listen(PORT, HOST, async () => {
-	console.log(`Server is running on http://${HOST}:${PORT}`);
-});
+let server: any;
 
-process.on('SIGINT', async () => {
-	console.log('STOPPING: Server is stopping...');
+Promise.resolve()
+    .then(() => connectMongoDB())
+    .then(() => {
+        server = app.listen(PORT, HOST, async () => {
+            console.log(`Server is running on http://${HOST}:${PORT}`);
+        });
+    })
+    .catch((error) => {
+        console.log("ERROR ON STARTING: " + error);
+    });
 
-	// Stopping express server
-	await new Promise((resolve) => {
-		server.close(() => {
-			console.log('STOPPED: Server stopped by user!');
-			resolve(null);
-		});
-	});
+process.on("SIGINT", async () => {
+    console.log("STOPPING: Server is stopping...");
 
-	process.exit(0);
+    // Stopping express server
+    server.close(() => {
+        console.log("STOPPED: Server stopped by user!");
+    });
+
+    process.exit(0);
 });
