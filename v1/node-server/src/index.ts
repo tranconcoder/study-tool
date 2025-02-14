@@ -1,6 +1,12 @@
+// Express
 import express from 'express';
+
+// Library
 import compress from 'compression';
 import helmet from 'helmet';
+
+// Routes
+import apiRouter from './routes';
 
 const app = express();
 
@@ -15,5 +21,6 @@ app.use(compress());
 app.use(helmet());
 
 // Routes
+app.use('/v1/api', apiRouter);
 
 export default app;
