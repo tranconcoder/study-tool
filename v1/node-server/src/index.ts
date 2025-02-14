@@ -7,6 +7,7 @@ import helmet from 'helmet';
 
 // Routes
 import apiRouter from './routes';
+import errorHandlers from './exceptions';
 
 const app = express();
 
@@ -22,5 +23,7 @@ app.use(helmet());
 
 // Routes
 app.use('/v1/api', apiRouter);
+
+app.use(errorHandlers);
 
 export default app;

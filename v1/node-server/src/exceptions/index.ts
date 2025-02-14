@@ -1,7 +1,6 @@
 import { ErrorRequestHandler } from 'express';
 import BaseException from './base.exception';
-import chalk from 'chalk';
-import winston from 'winston';
+import logger from '../services/logger.service';
 
 const errorHandlers: ErrorRequestHandler = (
 	error: Error | BaseException,
@@ -20,7 +19,10 @@ const errorHandlers: ErrorRequestHandler = (
 	customError.setPath(req.path);
 
 	// Show error in console
-	console.log(chalk.red.bold(customError.toString()));
+	logger.log({
+		level: 'error',
+		message: customError.toString(),
+	});
 
 	// Send error response
 	res.status(customError.status).json(customError.getError());
