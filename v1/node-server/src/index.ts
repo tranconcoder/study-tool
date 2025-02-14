@@ -15,3 +15,5 @@ app.use(compress());
 app.use(helmet());
 
 // Routes
+
+export default app;
