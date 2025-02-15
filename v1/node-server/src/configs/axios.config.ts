@@ -2,9 +2,9 @@ import axios from 'axios';
 
 const commonConfig = {};
 
-export const qldtInstace = axios.create({
+export const qldtInstance = axios.create({
 	...commonConfig,
-	baseURL: 'https://qldt.vlute.edu.vn',
+	baseURL: 'https://qldt.vlute.edu.vn/VLUTE-Web',
 });
 
 export const emsInstance = axios.create({

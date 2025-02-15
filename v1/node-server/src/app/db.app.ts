@@ -1,13 +1,28 @@
 import mongoose from 'mongoose';
+import chalk from 'chalk';
 import { MONGO_URI } from '../configs/env.config';
 
-export default class MongooseDB {
+class MongooseDB {
 	private static instance: MongooseDB;
 	private connection: mongoose.Connection;
 	private uri: string = MONGO_URI;
 
 	private constructor() {
 		this.connection = mongoose.connection;
+
+		this.connection.on('connected', () => {
+			console.log(`MongooseDB: ${chalk.green.bold('Connected')} to MongoDB`);
+		});
+
+		this.connection.on('disconnected', () => {
+			console.log(`MongooseDB: ${chalk.red.bold('Disconnected')} from MongoDB`);
+		});
+
+		this.connection.on('error', (error) => {
+			console.log(
+				`${chalk.red.bold('MongooseDB: Error')}: ${chalk.red.bold(error)}`
+			);
+		});
 	}
 
 	public static getInstance(): MongooseDB {
@@ -20,7 +35,9 @@ export default class MongooseDB {
 
 	public async connect(): Promise<void> {
 		try {
-			await mongoose.connect(uri);
+			console.log('MongooseDB: Connecting to MongoDB');
+
+			await mongoose.connect(this.uri);
 		} catch (error) {
 			throw new Error(`MongooseDB: ${error}`);
 		}
@@ -34,3 +51,7 @@ export default class MongooseDB {
 		}
 	}
 }
+
+const db = MongooseDB.getInstance();
+
+export default db;

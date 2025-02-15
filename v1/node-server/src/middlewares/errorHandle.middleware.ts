@@ -1,8 +1,8 @@
-import { ErrorRequestHandler } from 'express';
-import BaseException from './base.exception';
+import type { ErrorRequestHandler } from 'express';
+import BaseException from '../exceptions/base.exception';
 import logger from '../services/logger.service';
 
-const errorHandlers: ErrorRequestHandler = (
+export const errorHandlers: ErrorRequestHandler = (
 	error: Error | BaseException,
 	req,
 	res,
@@ -30,5 +30,3 @@ export const catchError = (fn: Function) => {
 		Promise.resolve(fn(req, res, next)).catch(next);
 	};
 };
-
-export default errorHandlers;
