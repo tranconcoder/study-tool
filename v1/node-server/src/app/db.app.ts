@@ -4,6 +4,7 @@ import { MONGO_URI } from '../configs/env.config';
 
 class MongooseDB {
 	private static instance: MongooseDB;
+
 	private connection: mongoose.Connection;
 	private uri: string = MONGO_URI;
 
