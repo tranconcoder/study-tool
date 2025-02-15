@@ -19,13 +19,11 @@ export default class BaseException {
 		name: string,
 		message: string,
 		status: number,
-		level: ErrorLevel = ErrorLevel.MEDIUM,
-		time: Date = new Date()
+		level: ErrorLevel = ErrorLevel.MEDIUM
 	) {
 		this.name = name;
 		this.message = message;
 		this.status = status;
-		this.time = time;
 		this.level = level;
 		this.path = '';
 	}
@@ -35,7 +33,6 @@ export default class BaseException {
 			name: this.name,
 			message: this.message,
 			status: this.status,
-			time: this.time,
 			level: this.level,
 			path: this.path,
 		};
@@ -46,6 +43,6 @@ export default class BaseException {
 	}
 
 	public toString() {
-		return `[${this.time.toISOString()}] ${this.status} - ${this.level}: ${this.message}`;
+		return `${this.path}:::${this.status}::${this.level}::${this.message}`;
 	}
 }

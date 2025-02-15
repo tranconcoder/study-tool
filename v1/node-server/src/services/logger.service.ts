@@ -1,31 +1,33 @@
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
-import { getDirnameByYearWeekDay } from '../utils/logger.util';
-import fs from 'fs';
+import { NODE_ENV } from '../configs/env.config';
 
 const consoleTransport = new winston.transports.Console({
 	format: winston.format.combine(
 		winston.format.colorize(),
-		winston.format.timestamp(),
-		winston.format.align(),
-		winston.format.printf((info) => `${info.level}: ${info.message}`)
+		winston.format.printf((info) => `[${info.level}]: ${info.message}`)
 	),
 });
 
 const fileTransport = new winston.transports.DailyRotateFile({
 	level: 'info',
+	format: winston.format.combine(
+		winston.format.timestamp(),
+		winston.format.json()
+	),
 	zippedArchive: true,
-	filename: 'logs/%DATE%.log',
+	filename: '%DATE%.log',
+	dirname: 'logs',
 	datePattern: 'yyyy/[weeks]-ww/[day]-d',
+	maxFiles: '30d',
+	maxSize: '50m',
 });
 
 const logger = winston.createLogger({
-	format: winston.format.json(),
-	defaultMeta: { service: 'user-service' },
 	transports: [fileTransport],
 });
 
-if (process.env.NODE_ENV !== 'production') {
+if (NODE_ENV !== 'production') {
 	logger.add(consoleTransport);
 }
 

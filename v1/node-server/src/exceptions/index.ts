@@ -6,7 +6,7 @@ const errorHandlers: ErrorRequestHandler = (
 	error: Error | BaseException,
 	req,
 	res,
-	next
+	__
 ) => {
 	let customError = error as BaseException;
 
@@ -19,10 +19,7 @@ const errorHandlers: ErrorRequestHandler = (
 	customError.setPath(req.path);
 
 	// Show error in console
-	logger.log({
-		level: 'error',
-		message: customError.toString(),
-	});
+	logger.error(customError.toString());
 
 	// Send error response
 	res.status(customError.status).json(customError.getError());

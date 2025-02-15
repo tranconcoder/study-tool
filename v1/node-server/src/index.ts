@@ -4,6 +4,7 @@ import express from 'express';
 // Library
 import compress from 'compression';
 import helmet from 'helmet';
+import morgan from 'morgan';
 
 // Routes
 import apiRouter from './routes';
@@ -20,10 +21,12 @@ app.use(express.urlencoded({ extended: true }));
 // Library
 app.use(compress());
 app.use(helmet());
+app.use(morgan('dev'));
 
 // Routes
 app.use('/v1/api', apiRouter);
 
+// Error handling
 app.use(errorHandlers);
 
 export default app;
