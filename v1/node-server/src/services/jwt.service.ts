@@ -21,4 +21,8 @@ export default class JwtService {
 
 		return [accessToken, refreshToken];
 	}
+
+	public static verifyToken(token: string, publicKey: string): any {
+		return jwt.verify(token, publicKey);
+	}
 }

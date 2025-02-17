@@ -13,7 +13,10 @@ const fileTransport = new winston.transports.DailyRotateFile({
 	level: 'info',
 	format: winston.format.combine(
 		winston.format.timestamp(),
-		winston.format.json()
+		winston.format.json(),
+		winston.format.printf(
+			(info) => `[${info.timestamp}] [${info.level}]: ${info.message}`
+		)
 	),
 	zippedArchive: true,
 	filename: '%DATE%.log',

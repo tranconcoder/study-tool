@@ -4,6 +4,7 @@ const thirdPartyAuthSchema = new Schema(
 	{
 		auth_info_hash: {
 			type: String,
+			unique: true,
 			required: true,
 		},
 		public_key: {

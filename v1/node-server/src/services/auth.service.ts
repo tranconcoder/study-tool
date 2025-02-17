@@ -9,6 +9,7 @@ import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
 import JwtService from './jwt.service';
 import ThirdPartyAuth from '../app/schemas/thirdPartyAuth.schema';
+import logger from './logger.service';
 
 export default class AuthService {
 	public static async login(username: string, password: string) {
@@ -34,7 +35,7 @@ export default class AuthService {
 
 				return session;
 			})
-			.then((session) => {
+			.then(async (session) => {
 				// Hash auth info to compare new auth info
 				const authInfoHash = crypto
 					.createHash('sha256')
@@ -54,19 +55,30 @@ export default class AuthService {
 					},
 				});
 
+				// Save to database
+				// Override when auth info hash exists
+				const auth = await ThirdPartyAuth.findOneAndReplace(
+					{ auth_info_hash: authInfoHash },
+					{
+						auth_info_hash: authInfoHash,
+						public_key: publicKey,
+						private_key: privateKey,
+						host: 'qldt',
+						host_token: session,
+					},
+					{
+						upsert: true,
+						new: true,
+					}
+				).lean();
+				console.log(auth);
+
 				const [accessToken, refreshToken] = JwtService.generateJwtTokenPair(
-					{ username },
+					{ authId: auth._id.toHexString(), username },
 					privateKey
 				);
 
-				// Save to database
-				ThirdPartyAuth.create({
-					auth_info_hash: authInfoHash,
-					public_key: publicKey,
-					private_key: privateKey,
-					host: 'qldt',
-					host_token: session,
-				});
+				logger.info(`Login success: ${username}`);
 
 				return { accessToken, refreshToken };
 			});
