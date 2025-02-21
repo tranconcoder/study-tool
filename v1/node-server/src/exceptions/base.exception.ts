@@ -43,6 +43,6 @@ export default class BaseException {
 	}
 
 	public toString() {
-		return `${this.path}:::${this.status}::${this.level}::${this.message}`;
+        return `${this.name}::${this.path}::${this.status}::${this.level}::${this.message}`;
 	}
 }

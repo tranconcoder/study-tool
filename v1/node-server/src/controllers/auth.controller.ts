@@ -19,9 +19,7 @@ export default class AuthController {
 			const value = await loginSchema.validateAsync(req.body);
 
 			// Handle login
-			res
-				.status(200)
-				.json(await AuthService.login(value.username, value.password));
+            (await AuthService.login(value.username, value.password)).send(res);
 		} catch (error) {
 			if (error instanceof Joi.ValidationError) {
 				throw new NotFoundException(

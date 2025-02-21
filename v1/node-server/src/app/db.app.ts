@@ -1,56 +1,43 @@
-import mongoose from 'mongoose';
-import chalk from 'chalk';
-import { MONGO_URI } from '../configs/env.config';
+import mongoose, { MongooseError } from "mongoose";
+import { MONGO_URI, MONGO_MIN_POOL_SIZE, MONGO_MAX_POOL_SIZE } from "../configs/db.config";
+import logger from "../services/logger.service";
 
+// Singleton pattern
 class MongooseDB {
-	private static instance: MongooseDB;
+    private static instance: MongooseDB;
+    private connectionString: string;
 
-	private connection: mongoose.Connection;
-	private uri: string = MONGO_URI;
+    private constructor() {
+        this.connectionString = MONGO_URI;
 
-	private constructor() {
-		this.connection = mongoose.connection;
+        mongoose.connection.on("connected", () => {
+            console.log("Mongoose connected");
+        });
 
-		this.connection.on('connected', () => {
-			console.log(`MongooseDB: ${chalk.green.bold('Connected')} to MongoDB`);
-		});
+        mongoose.connection.on("error", (error: MongooseError) => {
+            logger.error(`${error.name}::::::::${error.message}`);
+        });
 
-		this.connection.on('disconnected', () => {
-			console.log(`MongooseDB: ${chalk.red.bold('Disconnected')} from MongoDB`);
-		});
+        mongoose.connection.on("disconnected", () => {
+            console.log("Mongoose disconnected!")
+        })
+    }
 
-		this.connection.on('error', (error) => {
-			console.log(
-				`${chalk.red.bold('MongooseDB: Error')}: ${chalk.red.bold(error)}`
-			);
-		});
-	}
+    public static getInstance() {
+        if (!this.instance) {
+            this.instance = new MongooseDB();
+        }
 
-	public static getInstance(): MongooseDB {
-		if (!MongooseDB.instance) {
-			MongooseDB.instance = new MongooseDB();
-		}
 
-		return MongooseDB.instance;
-	}
+        return this.instance;
+    }
 
-	public async connect(): Promise<void> {
-		try {
-			console.log('MongooseDB: Connecting to MongoDB');
-
-			await mongoose.connect(this.uri);
-		} catch (error) {
-			throw new Error(`MongooseDB: ${error}`);
-		}
-	}
-
-	public async disconnect(): Promise<void> {
-		try {
-			await this.connection.close();
-		} catch (error) {
-			throw new Error(`MongooseDB: ${error}`);
-		}
-	}
+    public connect() {
+        mongoose.connect(this.connectionString, {
+            minPoolSize: MONGO_MIN_POOL_SIZE,
+            maxPoolSize: MONGO_MAX_POOL_SIZE,
+        });
+    }
 }
 
 const db = MongooseDB.getInstance();

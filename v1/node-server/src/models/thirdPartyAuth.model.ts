@@ -1,4 +1,4 @@
-import mongoose, { Schema } from 'mongoose';
+import mongoose, { Schema, InferSchemaType } from 'mongoose';
 
 const thirdPartyAuthSchema = new Schema(
 	{
@@ -34,6 +34,8 @@ const thirdPartyAuthSchema = new Schema(
 	}
 );
 
-const ThirdPartyAuth = mongoose.model('ThirdPartyAuth', thirdPartyAuthSchema);
+export type ThirdPartyAuth = InferSchemaType<typeof thirdPartyAuthSchema>;
 
-export default ThirdPartyAuth;
+const ThirdPartyAuthModel = mongoose.model<ThirdPartyAuth>('ThirdPartyAuth', thirdPartyAuthSchema);
+
+export default ThirdPartyAuthModel;

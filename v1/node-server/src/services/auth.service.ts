@@ -1,15 +1,19 @@
 import { qldtInstance } from '../configs/axios.config';
 
+// Libs
+import crypto from 'crypto';
+
 // Exceptions
 import { ErrorLevel } from '../exceptions/base.exception';
 import MissingParameterException from '../exceptions/missing-parameter.exception';
 import PermissionDeniedException from '../exceptions/permission-denied.exception';
 
-import crypto from 'crypto';
-import jwt from 'jsonwebtoken';
+// Service
 import JwtService from './jwt.service';
-import ThirdPartyAuth from '../app/schemas/thirdPartyAuth.schema';
 import logger from './logger.service';
+import ThirdPartyAuthService from './thirdPartyAuth.service';
+import KeyService from './key.service';
+import {OkResponse} from '../responses/success.response';
 
 export default class AuthService {
 	public static async login(username: string, password: string) {
@@ -19,10 +23,11 @@ export default class AuthService {
 
 		return await qldtInstance
 			.post('login.action', loginForm)
+            // Handle login
 			.then(({ request }) => {
 				const path: string | undefined = request.path;
 				if (!request || !path || path.startsWith('/VLUTE-Web/login.action')) {
-					throw new PermissionDeniedException('Login failed', ErrorLevel.LOW);
+					throw new PermissionDeniedException('Invalid username or password!', ErrorLevel.LOW);
 				}
 
 				const session = path.split(';')?.[1]?.split('=')?.[1];
@@ -35,6 +40,7 @@ export default class AuthService {
 
 				return session;
 			})
+            // Generate token
 			.then(async (session) => {
 				// Hash auth info to compare new auth info
 				const authInfoHash = crypto
@@ -43,35 +49,20 @@ export default class AuthService {
 					.digest('hex');
 
 				// Generate public key and private key RSA
-				const { publicKey, privateKey } = crypto.generateKeyPairSync('rsa', {
-					modulusLength: 2048,
-					publicKeyEncoding: {
-						type: 'spki',
-						format: 'pem',
-					},
-					privateKeyEncoding: {
-						type: 'pkcs8',
-						format: 'pem',
-					},
-				});
+                const { publicKey, privateKey } = KeyService.generateKeyPair();
 
 				// Save to database
 				// Override when auth info hash exists
-				const auth = await ThirdPartyAuth.findOneAndReplace(
-					{ auth_info_hash: authInfoHash },
-					{
-						auth_info_hash: authInfoHash,
-						public_key: publicKey,
-						private_key: privateKey,
-						host: 'qldt',
-						host_token: session,
-					},
-					{
-						upsert: true,
-						new: true,
-					}
-				).lean();
-				console.log(auth);
+                const auth = await ThirdPartyAuthService.createOrUpdateByHashInfo(
+                    authInfoHash,
+                    {
+                        auth_info_hash: authInfoHash,
+                        public_key: publicKey,
+                        private_key: privateKey,
+                        host: 'qldt',
+                        host_token: session,
+                    }
+                )
 
 				const [accessToken, refreshToken] = JwtService.generateJwtTokenPair(
 					{ authId: auth._id.toHexString(), username },
@@ -80,7 +71,7 @@ export default class AuthService {
 
 				logger.info(`Login success: ${username}`);
 
-				return { accessToken, refreshToken };
+                return new OkResponse('Login success', { accessToken, refreshToken });
 			});
 	}
 }
