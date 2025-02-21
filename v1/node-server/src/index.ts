@@ -12,11 +12,9 @@ import { ErrorLevel, NotFoundException } from "./responses/error.response"
 // Routes
 import apiRouter from "./routes";
 
-// Middleware
-import { errorHandlers } from "./middlewares/errorHandle.middleware";
-
 // Database
 import db from "./app/db.app";
+import HandleErrorService from "./services/handleError.service";
 
 const app = express();
 
@@ -43,6 +41,6 @@ app.use((_, __, next) => {
 });
 
 // Error handling
-app.use(errorHandlers);
+app.use(HandleErrorService.handler);
 
 export default app;

@@ -2,10 +2,10 @@ import { Router } from 'express';
 // Controllers
 import AuthController from '../../controllers/auth.controller';
 // Middleware
-import { catchError } from '../../middlewares/errorHandle.middleware';
+import HandleErrorService from '../../services/handleError.service';
 
 const authRoute = Router();
 
-authRoute.post('/login', catchError(AuthController.login));
+authRoute.post('/login', HandleErrorService.catchError(AuthController.login));
 
 export default authRoute;

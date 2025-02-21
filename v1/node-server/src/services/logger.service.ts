@@ -1,5 +1,6 @@
 import * as winston from 'winston';
 import 'winston-daily-rotate-file';
+import {v4} from 'uuid';
 
 const consoleTransport = new winston.transports.Console({
 	format: winston.format.combine(
@@ -11,10 +12,15 @@ const consoleTransport = new winston.transports.Console({
 const fileTransport = new winston.transports.DailyRotateFile({
 	level: 'info',
 	format: winston.format.combine(
+		winston.format.metadata(),
 		winston.format.timestamp(),
-		winston.format.json(),
 		winston.format.printf(
-			(info) => `[${info.timestamp}] [${info.level}]: ${info.message}`
+            (info: any) => {
+                const id = info?.metadata?.id;
+                const idText = id ? `(${id}) ` : '';
+
+				return `${idText}[${info.timestamp}] [${info.level}]: ${info.message}`
+            }
 		)
 	),
 	zippedArchive: true,
