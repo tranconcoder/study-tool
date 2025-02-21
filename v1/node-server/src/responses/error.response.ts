@@ -1,4 +1,3 @@
-import { name } from './../../../react-client/node_modules/ci-info/index.d';
 export enum ErrorLevel {
 	LOW = 'LOW',
 	MEDIUM = 'MEDIUM',
@@ -44,5 +43,29 @@ export default class BaseException {
 
 	public toString() {
         return `${this.name}::${this.path}::${this.status}::${this.level}::${this.message}`;
+	}
+}
+
+export class MissingParameterException extends BaseException {
+	public constructor(message: string, level: ErrorLevel = ErrorLevel.HIGH) {
+		super('MissingParameterException', message, 400, level);
+	}
+}
+
+export class NotFoundException extends BaseException {
+	public constructor(message: string, level: ErrorLevel = ErrorLevel.MEDIUM) {
+		super('NotFoundException', message, 404, level);
+	}
+}
+
+export class PermissionDeniedException extends BaseException {
+	public constructor(message: string, level: ErrorLevel = ErrorLevel.MEDIUM) {
+		super('PermissionDeniedException', message, 403, level);
+	}
+}
+
+export class UnknownException extends BaseException {
+	public constructor(message: string, level: ErrorLevel = ErrorLevel.MEDIUM) {
+		super('UnknownException', message, 500, level);
 	}
 }

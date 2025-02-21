@@ -6,6 +6,9 @@ import compress from "compression";
 import helmet from "helmet";
 import morgan from "morgan";
 
+// Response
+import { ErrorLevel, NotFoundException } from "./responses/error.response"
+
 // Routes
 import apiRouter from "./routes";
 
@@ -14,8 +17,6 @@ import { errorHandlers } from "./middlewares/errorHandle.middleware";
 
 // Database
 import db from "./app/db.app";
-import NotFoundException from "./exceptions/not-found.exception";
-import {ErrorLevel} from "./exceptions/base.exception";
 
 const app = express();
 
@@ -25,7 +26,7 @@ app.use(express.raw());
 app.use(express.text());
 app.use(express.urlencoded({ extended: true }));
 
-// Lib middleware
+// Middleware
 app.use(compress());
 app.use(helmet());
 app.use(morgan("dev"));
@@ -36,7 +37,7 @@ db.connect();
 // Routes
 app.use("/v1/api", apiRouter);
 
-// 404 handler
+// 404 Handler
 app.use((_, __, next) => {
     next(new NotFoundException("Page not found", ErrorLevel.LOW));
 });

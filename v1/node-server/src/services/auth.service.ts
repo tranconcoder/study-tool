@@ -4,16 +4,13 @@ import { qldtInstance } from '../configs/axios.config';
 import crypto from 'crypto';
 
 // Exceptions
-import { ErrorLevel } from '../exceptions/base.exception';
-import MissingParameterException from '../exceptions/missing-parameter.exception';
-import PermissionDeniedException from '../exceptions/permission-denied.exception';
+import { MissingParameterException, PermissionDeniedException } from '../responses/error.response';
 
 // Service
 import JwtService from './jwt.service';
 import logger from './logger.service';
 import ThirdPartyAuthService from './thirdPartyAuth.service';
 import KeyService from './key.service';
-import {OkResponse} from '../responses/success.response';
 
 export default class AuthService {
 	public static async login(username: string, password: string) {
@@ -27,14 +24,13 @@ export default class AuthService {
 			.then(({ request }) => {
 				const path: string | undefined = request.path;
 				if (!request || !path || path.startsWith('/VLUTE-Web/login.action')) {
-					throw new PermissionDeniedException('Invalid username or password!', ErrorLevel.LOW);
+					throw new PermissionDeniedException('Invalid username or password!');
 				}
 
 				const session = path.split(';')?.[1]?.split('=')?.[1];
 				if (!session) {
 					throw new MissingParameterException(
-						'Get account info failed',
-						ErrorLevel.HIGH
+						'Get account info failed'
 					);
 				}
 
@@ -71,7 +67,10 @@ export default class AuthService {
 
 				logger.info(`Login success: ${username}`);
 
-                return new OkResponse('Login success', { accessToken, refreshToken });
+                return {
+                    accessToken,
+                    refreshToken,
+                };
 			});
 	}
 }

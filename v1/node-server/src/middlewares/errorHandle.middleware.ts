@@ -1,5 +1,5 @@
 import type { ErrorRequestHandler, RequestHandler } from 'express';
-import BaseException from '../exceptions/base.exception';
+import BaseException from '../responses/error.response';
 import logger from '../services/logger.service';
 
 export const errorHandlers: ErrorRequestHandler = (
